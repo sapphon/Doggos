@@ -11,7 +11,10 @@ indexParameters = {
 }
 @app.route('/doggo', methods=['GET'])
 def hello_world():
-    indexParameters['error_message'] = request.args.get('error')
+    error_message = request.args.get('error')
+    if not error_message:
+        error_message = '(Sorry, no additional information is available.)'
+    indexParameters['error_message'] = error_message
     return render_template('index.html', **indexParameters)
 
 
