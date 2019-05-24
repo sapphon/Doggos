@@ -1,8 +1,6 @@
 from flask import *
-import slack
 
 app = Flask(__name__)
-#client = Slack.WebClient(token=TOKENGOESHERE)
 
 indexParameters = {
     'title': 'Pets of Fordlabs',
@@ -14,7 +12,7 @@ indexParameters = {
 @app.route('/doggo', methods=['GET'])
 def hello_world():
     indexParameters['error_message'] = request.args.get('error')
-    return render_template('index.html', indexParameters=indexParameters)
+    return render_template('index.html', **indexParameters)
 
 
 if __name__ == '__main__':
