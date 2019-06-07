@@ -2,13 +2,17 @@ from flask import *
 import requests
 import slack
 import shutil
+import os
+import random
+
 
 slack_token = 'xoxp-addarealusertoken'
 slack_bot_token = 'xoxb-addarealbottoken_forabotinthechannelyouwannause'
 slack_client = slack.WebClient(token=slack_token)
+labs_pets_channel_id = 'C7U8RMRC1'
 app = Flask(__name__)
 
-indexParameters = {
+model = {
     'title': 'Pets of Fordlabs',
     'image_url': 'https://preview.redd.it/be1fc3tlo5031.jpg?width=640&crop=smart&auto=webp&s=8c9d0eff07da7f6eac8142c3bdfc13b2ab658e3c',
     'let_them_down_gently': "We're sorry, but the service you are using encountered a problem.",
@@ -17,24 +21,53 @@ indexParameters = {
     'max_image_height': '600',
     'max_image_width': '600'
 }
+
+
+def choose_pet_image():
+    return "static/" + random.choice(get_all_image_files_in_dir('static'))
+
+
+def get_all_image_files_in_dir(dir):
+    candidate_files = os.listdir('static')
+    return list(filter(filename_denotes_image, candidate_files))
+
+
+def filename_denotes_image(filename):
+    file_types = ['jpg', 'jpeg', 'png', 'bmp', 'tif', 'tiff', 'gif']
+    for type in file_types:
+        if filename.endswith(type):
+            return True
+    return False
+
 @app.route('/doggo', methods=['GET'])
 def doggo():
-    error_message = request.args.get('error')
-    if not error_message:
-        error_message = '(Sorry, no additional information is available.)'
-    indexParameters['error_message'] = error_message
-    pets_history = slack_client.channels_history(channel='C7U8RMRC1')
+    model['error_message'] = choose_error_message(model, request)
+    model['image_url'] = choose_pet_image()
+    return render_template('index.html', **model)
+
+@app.route('/refresh', methods=['GET'])
+def refresh():
+    try:
+        retrieve_pet_images()
+    except:
+        return "failure"
+    return "success"
+
+
+def retrieve_pet_images():
+    pets_history = slack_client.channels_history(channel=labs_pets_channel_id)
     file_messages = [x for x in pets_history['messages'] if is_image_message(x)]
     doggo_private_slack_url = file_messages[0].get('files')[0].get('url_private')
-
-    indexParameters['error_message'] = error_message
     write_url_to_raw_file(doggo_private_slack_url, "testimage.jpg")
-    indexParameters['image_url'] = "static/testimage.jpg"
-    return render_template('index.html', **indexParameters)
+
+
+def choose_error_message(error_page_model, error_page_request):
+    return error_page_request.args.get('error') if error_page_request.args.get('error') else '(Sorry, no additional information is available.)'
 
 
 def is_image_message(message):
     return message.get('files') and message.get('files')[0].get('mimetype').startswith('image')
+
 
 def write_url_to_raw_file(url, desired_file_name):
     response = requests.get(url, stream=True, headers={"Authorization": "Bearer "+slack_bot_token})
