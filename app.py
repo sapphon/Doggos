@@ -57,8 +57,10 @@ def refresh():
 def retrieve_pet_images():
     pets_history = slack_client.channels_history(channel=labs_pets_channel_id)
     file_messages = [x for x in pets_history['messages'] if is_image_message(x)]
-    doggo_private_slack_url = file_messages[0].get('files')[0].get('url_private')
-    write_url_to_raw_file(doggo_private_slack_url, "testimage.jpg")
+    for n in range(len(file_messages)):
+        doggo_private_slack_url = file_messages[n].get('files')[0].get('url_private')
+        (_, file_extension) = os.path.splitext(doggo_private_slack_url)
+        write_url_to_raw_file(doggo_private_slack_url, "testimage"+str(n)+file_extension)
 
 
 def choose_error_message(error_page_model, error_page_request):
