@@ -1,0 +1,7 @@
+---
+applications:
+  - name: Doggos
+    path: .
+    buildpack: python_buildpack
+    memory: 100M
+    disk_quota: 100M

@@ -6,8 +6,8 @@ import os
 import random
 
 
-slack_token = 'xoxp-addarealusertoken'
-slack_bot_token = 'xoxb-addarealbottoken_forabotinthechannelyouwannause'
+slack_token = os.environ['SLACK_API_TOKEN']
+slack_bot_token = os.environ['SLACK_BOT_TOKEN']
 slack_client = slack.WebClient(token=slack_token)
 labs_pets_channel_id = 'C7U8RMRC1'
 app = Flask(__name__)
@@ -41,7 +41,7 @@ def filename_denotes_image(filename):
 
 @app.route('/doggo', methods=['GET'])
 def doggo():
-    model['error_message'] = choose_error_message(model, request)
+    model['error_message'] = choose_error_message(request)
     model['image_url'] = choose_pet_image()
     return render_template('index.html', **model)
 
@@ -63,7 +63,7 @@ def retrieve_pet_images():
         write_url_to_raw_file(doggo_private_slack_url, "testimage"+str(n)+file_extension)
 
 
-def choose_error_message(error_page_model, error_page_request):
+def choose_error_message(error_page_request):
     return error_page_request.args.get('error') if error_page_request.args.get('error') else '(Sorry, no additional information is available.)'
 
 
