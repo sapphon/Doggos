@@ -3,5 +3,10 @@ applications:
   - name: Doggos
     path: .
     buildpack: python_buildpack
-    memory: 100M
-    disk_quota: 100M
+    memory: 512M
+    disk_quota: 1024M
+    env:
+      HTTP_PROXY: http://internet.ford.com:83
+      HTTPS_PROXY: http://internet.ford.com:83
+      http_proxy: http://internet.ford.com:83
+      https_proxy: http://internet.ford.com:83
