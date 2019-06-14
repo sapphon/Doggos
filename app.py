@@ -6,7 +6,6 @@ import os
 import random
 import sys
 
-
 slack_token = os.environ['SLACK_API_TOKEN']
 slack_bot_token = os.environ['SLACK_BOT_TOKEN']
 slack_client = slack.WebClient(token=slack_token)
@@ -40,11 +39,13 @@ def filename_denotes_image(filename):
             return True
     return False
 
+
 @app.route('/doggo', methods=['GET'])
 def doggo():
     model['error_message'] = choose_error_message(request)
     model['image_url'] = choose_pet_image()
     return render_template('index.html', **model)
+
 
 @app.route('/refresh', methods=['GET'])
 def refresh():
@@ -62,11 +63,12 @@ def retrieve_pet_images():
     for n in range(len(file_messages)):
         doggo_private_slack_url = file_messages[n].get('files')[0].get('url_private')
         (_, file_extension) = os.path.splitext(doggo_private_slack_url)
-        write_url_to_raw_file(doggo_private_slack_url, "testimage"+str(n)+file_extension)
+        write_url_to_raw_file(doggo_private_slack_url, "testimage" + str(n) + file_extension)
 
 
 def choose_error_message(error_page_request):
-    return error_page_request.args.get('error') if error_page_request.args.get('error') else '(Sorry, no additional information is available.)'
+    return error_page_request.args.get('error') if error_page_request.args.get(
+        'error') else '(Sorry, no additional information is available.)'
 
 
 def is_image_message(message):
@@ -74,13 +76,14 @@ def is_image_message(message):
 
 
 def write_url_to_raw_file(url, desired_file_name):
-    response = requests.get(url, stream=True, headers={"Authorization": "Bearer "+slack_bot_token})
+    response = requests.get(url, stream=True, headers={"Authorization": "Bearer " + slack_bot_token})
     print(response.status_code)
     print(response.headers['content-type'])
-    with open('static/'+desired_file_name, 'wb') as out_file:
+    with open('static/' + desired_file_name, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
     del response
 
-if __name__ == '__main__':
-    app.run()
 
+if __name__ == '__main__':
+    port = int(os.getenv("PORT", 8080))
+    app.run(host='0.0.0.0', debug=False, port=port)
