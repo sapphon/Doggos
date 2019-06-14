@@ -4,6 +4,7 @@ import slack
 import shutil
 import os
 import random
+import sys
 
 
 slack_token = os.environ['SLACK_API_TOKEN']
@@ -50,6 +51,7 @@ def refresh():
     try:
         retrieve_pet_images()
     except:
+        print("Unexpected error:", sys.exc_info()[0])
         return "failure"
     return "success"
 
