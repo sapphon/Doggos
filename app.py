@@ -17,7 +17,7 @@ labs_pets_channel_id = 'C7U8RMRC1'
 app = Flask(__name__)
 
 model = {
-    'title': 'Pets of Fordlabs',
+    'title': 'Oof.',
     'image_url': 'https://preview.redd.it/be1fc3tlo5031.jpg?width=640&crop=smart&auto=webp&s=8c9d0eff07da7f6eac8142c3bdfc13b2ab658e3c',
     'let_them_down_gently': "We're sorry, but the service you are using encountered a problem.",
     'heres_a_doggo': "To make up for it, we've got this cute pet to show you.",
