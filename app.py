@@ -8,7 +8,11 @@ import sys
 
 slack_token = os.environ['SLACK_API_TOKEN']
 slack_bot_token = os.environ['SLACK_BOT_TOKEN']
-slack_client = slack.WebClient(token=slack_token)
+try:
+    proxy = os.environ['HTTP_PROXY']
+except KeyError:
+    proxy = ""
+slack_client = slack.WebClient(token=slack_token, proxy=proxy)
 labs_pets_channel_id = 'C7U8RMRC1'
 app = Flask(__name__)
 
@@ -52,7 +56,7 @@ def refresh():
     try:
         retrieve_pet_images()
     except:
-        print("Unexpected error:", sys.exc_info()[0])
+        print("Unexpected error:", sys.exc_info()[1])
         return "failure"
     return "success"
 
